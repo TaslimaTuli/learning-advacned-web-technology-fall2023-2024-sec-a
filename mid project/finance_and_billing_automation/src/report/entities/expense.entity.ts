@@ -17,7 +17,7 @@ export class Expense {
   description: string;
 
   @ApiProperty({ description: 'Price of the expense.' })
-  @Column()
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 
   @ApiProperty({

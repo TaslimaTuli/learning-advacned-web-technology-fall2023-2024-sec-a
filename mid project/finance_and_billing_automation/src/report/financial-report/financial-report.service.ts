@@ -32,7 +32,7 @@ export class FinancialService {
 
     //sum of price
     for (const expenseDto of expenses) {
-      totalExpense += parseInt(expenseDto.price + '');
+      totalExpense += parseFloat(expenseDto.price + '');
     }
     financialReport.totalExpense = totalExpense;
     // Create fin report
@@ -44,7 +44,7 @@ export class FinancialService {
     for (const expenseDto of expenses) {
       const expense = new Expense();
       expense.description = expenseDto.description;
-      expense.price = parseInt(expenseDto.price + '');
+      expense.price = parseFloat(expenseDto.price + '');
       expense.financialReport = financialReport;
       expense.financialReportId = finReport.id;
       await this.ExpenseRepository.save(expense);

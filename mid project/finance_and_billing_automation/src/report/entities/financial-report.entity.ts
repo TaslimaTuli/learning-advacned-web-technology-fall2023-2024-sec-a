@@ -31,6 +31,6 @@ export class FinancialReport {
     description: 'Total expense of the financial report.',
     default: 0,
   })
-  @Column({ default: 0 })
+  @Column({ default: 0, type: 'decimal', precision: 10, scale: 2 })
   totalExpense: number;
 }
