@@ -17,7 +17,14 @@ import { AuthenticatedGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/type/roles.decorator';
 import { Role } from 'src/type/role.enum';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Financial Reports')
 @Controller('financial')
 export class FinancialController {
   constructor(private readonly financialService: FinancialService) {}
@@ -25,6 +32,11 @@ export class FinancialController {
   @UseGuards(AuthenticatedGuard, RolesGuard)
   @Post('report')
   @Roles('finance staff', 'admin')
+  @ApiCreatedResponse({
+    description: 'Created Successfully :)',
+    type: FinancialReport,
+  })
+  @ApiBadRequestResponse({ description: 'Try Again :( ' })
   @UsePipes(ValidationPipe)
   async createFinancialReport(
     @Body() financialReportDto: FinancialReportDto,
@@ -40,6 +52,13 @@ export class FinancialController {
   @UseGuards(AuthenticatedGuard, RolesGuard)
   @Get('all-reports')
   @Roles('finance manager', 'finance staff', 'admin')
+  @ApiOkResponse({
+    description: 'Retrieve financial report details successfully.',
+    type: FinancialReport,
+  })
+  @ApiBadRequestResponse({
+    description: 'Try Again :( ',
+  })
   async getFinancialReports(): Promise<FinancialReport[]> {
     return await this.financialService.getFinancialReports();
   }

@@ -25,7 +25,14 @@ import { Role } from 'src/type/role.enum';
 import { RolesGuard } from 'src/auth/roles.guard';
 //import { Invoice } from 'src/invoices/entities/invoices.entity';
 import { InventoryService } from '../inventory/inventory.service';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Invoices')
 @Controller('invoices')
 export class InvoicesController {
   constructor(private readonly invoicesService: InvoiceService) {}
@@ -33,6 +40,11 @@ export class InvoicesController {
   @UseGuards(AuthenticatedGuard, RolesGuard)
   @Post('create')
   @Roles('billing staff', 'admin')
+  @ApiCreatedResponse({
+    description: 'Invoice Created Successfully :)',
+    type: Invoice,
+  })
+  @ApiBadRequestResponse({ description: 'Try Again :( ' })
   @UsePipes(ValidationPipe)
   async createInvoice(
     @Body() invoiceDto: InvoiceDto,
@@ -53,6 +65,13 @@ export class InvoicesController {
   @UseGuards(AuthenticatedGuard, RolesGuard)
   @Get('all')
   @Roles('billing staff', 'billing manager', 'admin')
+  @ApiOkResponse({
+    description: 'Retrieve financial report details successfully.',
+    type: Invoice,
+  })
+  @ApiBadRequestResponse({
+    description: 'Try Again :( ',
+  })
   async get(): Promise<Invoice[]> {
     return await this.invoicesService.get();
   }

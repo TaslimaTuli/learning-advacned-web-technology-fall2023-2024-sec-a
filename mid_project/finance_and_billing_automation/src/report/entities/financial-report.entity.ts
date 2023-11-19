@@ -1,24 +1,36 @@
-// financial-report.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Expense } from './expense.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class FinancialReport {
+  @ApiProperty({
+    description: 'The unique identifier of the financial report.',
+  })
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column() //{ default: new Date() }
+  @ApiProperty({ description: 'The date of the financial report.' })
+  @Column()
   date: Date;
 
+  // @ApiPropertyOptional({ description: 'The end date of the financial report.' })
   // @Column()
   // endDate: Date;
 
-  // @OneToMany(() => Expense, (expense) => expense.financialReport)
+  @ApiProperty({
+    type: () => [Expense],
+    description: 'Array of expenses associated with the financial report.',
+  })
   @OneToMany(() => Expense, (expense) => expense.financialReport, {
-    cascade: ['insert'], // Add this option to cascade operations to the related Expense entities
+    cascade: ['insert'],
   })
   expenses: Expense[];
 
+  @ApiProperty({
+    description: 'Total expense of the financial report.',
+    default: 0,
+  })
   @Column({ default: 0 })
   totalExpense: number;
 }

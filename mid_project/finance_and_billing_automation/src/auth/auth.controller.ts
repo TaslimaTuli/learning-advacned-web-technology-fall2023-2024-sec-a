@@ -22,7 +22,15 @@ import { RoleDto } from 'src/users/dto/role.dto';
 import { Roles } from 'src/type/roles.decorator';
 import { Role } from 'src/type/role.enum';
 import { RolesGuard } from './roles.guard';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { User } from 'src/users/entities/user.entity';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -32,6 +40,11 @@ export class AuthController {
 
   //@Public()
   @Post('signup')
+  @ApiCreatedResponse({
+    description: 'User is created :)',
+    type: User,
+  })
+  @ApiBadRequestResponse({ description: 'Try Again :( ' })
   @UsePipes(ValidationPipe)
   async signUp(@Body() UserDto: UserDto) {
     return this.usersService.create(UserDto);
@@ -40,16 +53,27 @@ export class AuthController {
   //@Public()
   @UseGuards(LocalAuthGuard)
   @Post('signin')
+  @ApiCreatedResponse({
+    description: 'Login Successful :)',
+    type: User,
+  })
+  @ApiBadRequestResponse({ description: 'Login Unsuccessful. Try Again :( ' })
   @UsePipes(ValidationPipe)
   async signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto);
   }
 
-  @Post('create-staff')
+  ///other roles like staffs and manager's account are created by admin.
+  //these can not be created by normal signup
+  @Post('admin/create-staffs')
+  @ApiCreatedResponse({
+    description: 'Staff Created Successfully :)',
+    type: User,
+  })
+  @ApiBadRequestResponse({ description: 'Try Again :( ' })
   @UseGuards(AuthenticatedGuard, RolesGuard)
   @UsePipes(ValidationPipe)
   @Roles('admin')
-  //@Roles(Role.admin)
   async creaeteStaff(@Body() roleDto: RoleDto) {
     return this.usersService.createByAdmin(roleDto);
   }
@@ -57,6 +81,12 @@ export class AuthController {
   //logout
   @UseGuards(AuthenticatedGuard)
   @Get('logout')
+  @ApiOkResponse({
+    description: 'You have logged out successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'Try Again :( ',
+  })
   logout(@Session() session: any) {
     //session.username = null;
 
